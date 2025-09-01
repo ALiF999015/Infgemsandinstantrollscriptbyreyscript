@@ -1,132 +1,167 @@
--- Splash Screen
-local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-local Splash = Instance.new("Frame", ScreenGui)
-Splash.Size = UDim2.new(1,0,1,0)
-Splash.BackgroundColor3 = Color3.fromRGB(173, 216, 230)
-Splash.BackgroundTransparency = 0.2
+-- 🔒 Anti Double Execute System
+if getgenv().ReyScriptExecuted then
+    if not game:GetService("Players").LocalPlayer:FindFirstChild("ReyScriptWarning") then
+        local ScreenGui = Instance.new("ScreenGui")
+        ScreenGui.Name = "ReyScriptWarning"
+        ScreenGui.Parent = game:GetService("CoreGui")
 
-local Label = Instance.new("TextLabel", Splash)
-Label.Size = UDim2.new(1,0,1,0)
-Label.BackgroundTransparency = 1
-Label.Text = "✨ Created by Rey_Script ✨"
-Label.TextColor3 = Color3.fromRGB(255,255,255)
-Label.Font = Enum.Font.Gotham
-Label.TextScaled = true
+        local Warning = Instance.new("TextLabel")
+        Warning.Size = UDim2.new(1, 0, 0, 50)
+        Warning.Position = UDim2.new(0, 0, 0, 0)
+        Warning.BackgroundTransparency = 1
+        Warning.Text = "⚠️Don't execute more than 1 because you will get banned from the game⚠️"
+        Warning.TextColor3 = Color3.fromRGB(255, 50, 50)
+        Warning.Font = Enum.Font.SourceSansBold
+        Warning.TextScaled = true
+        Warning.Parent = ScreenGui
 
--- Efek bintang random
-for i=1,30 do
-	local star = Instance.new("TextLabel", Splash)
-	star.Size = UDim2.new(0,5,0,5)
-	star.Position = UDim2.new(math.random(),0,math.random(),0)
-	star.BackgroundTransparency = 1
-	star.Text = "✦"
-	star.TextColor3 = Color3.fromRGB(255,255,255)
-	star.TextTransparency = 0.3
+        game:GetService("Debris"):AddItem(ScreenGui, 5)
+    end
+    return
+end
+getgenv().ReyScriptExecuted = true
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+
+-- 🌌 Splash Screen
+do
+    local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+    local Frame = Instance.new("Frame", ScreenGui)
+    Frame.Size = UDim2.new(1,0,1,0)
+    Frame.BackgroundColor3 = Color3.fromRGB(173, 216, 230)
+    Frame.BackgroundTransparency = 0.2
+
+    local Text = Instance.new("TextLabel", Frame)
+    Text.Size = UDim2.new(1,0,0.2,0)
+    Text.Position = UDim2.new(0,0,0.4,0)
+    Text.Text = "✨ Created by Rey_Script ✨"
+    Text.TextColor3 = Color3.fromRGB(255,255,255)
+    Text.Font = Enum.Font.GothamBold
+    Text.TextScaled = true
+    Text.TextStrokeTransparency = 0.5
+
+    -- efek bintang random
+    task.spawn(function()
+        for i=1,40 do
+            local star = Instance.new("TextLabel", Frame)
+            star.Text = "✦"
+            star.TextColor3 = Color3.fromRGB(255,255,255)
+            star.Font = Enum.Font.SourceSansBold
+            star.TextSize = math.random(10,20)
+            star.BackgroundTransparency = 1
+            star.Position = UDim2.new(math.random(),0,math.random(),0)
+            task.delay(5,function() star:Destroy() end)
+        end
+    end)
+
+    game:GetService("TweenService"):Create(Frame, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+    game:GetService("TweenService"):Create(Text, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+    game:GetService("Debris"):AddItem(ScreenGui,5)
 end
 
-task.delay(2,function()
-	Splash:Destroy()
-end)
-
--- GUI utama
-local Gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-local Main = Instance.new("Frame", Gui)
-Main.Size = UDim2.new(0,300,0,250)
+-- 🌟 GUI Utama
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local Main = Instance.new("Frame", ScreenGui)
+Main.Size = UDim2.new(0, 300, 0, 220)
 Main.Position = UDim2.new(0.35,0,0.3,0)
-Main.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-Main.BackgroundTransparency = 0.2
+Main.BackgroundColor3 = Color3.fromRGB(25,25,35)
+Main.BackgroundTransparency = 0.1
 Main.Active = true
 Main.Draggable = true
-Main.ClipsDescendants = true
 Main.BorderSizePixel = 0
-Main.Visible = true
+Main.ClipsDescendants = true
+Main.ZIndex = 5
 
--- UI Corner
-local UICorner = Instance.new("UICorner", Main)
-UICorner.CornerRadius = UDim.new(0,12)
+-- Glow efek
+local UIStroke = Instance.new("UIStroke", Main)
+UIStroke.Color = Color3.fromRGB(0,200,255)
+UIStroke.Thickness = 2
+UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
--- Glow effect
-local function makeButton(text, pos)
-	local btn = Instance.new("TextButton", Main)
-	btn.Size = UDim2.new(0,260,0,40)
-	btn.Position = pos
-	btn.Text = text
-	btn.BackgroundColor3 = Color3.fromRGB(173, 216, 230)
-	btn.TextColor3 = Color3.fromRGB(240,240,240)
-	btn.Font = Enum.Font.GothamSemibold
-	btn.TextScaled = true
-	btn.AutoButtonColor = true
-	local corner = Instance.new("UICorner", btn)
-	corner.CornerRadius = UDim.new(0,10)
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,12)
 
-	-- Glow anim
-	task.spawn(function()
-		while task.wait(1) do
-			btn.BackgroundColor3 = Color3.fromRGB(173,216,230)
-			game:GetService("TweenService"):Create(btn, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(200,230,255)}):Play()
-			task.wait(0.6)
-			game:GetService("TweenService"):Create(btn, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(173,216,230)}):Play()
-		end
-	end)
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1,0,0,40)
+Title.Text = "🎲 Jules RNG Script"
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.Font = Enum.Font.GothamBold
+Title.TextScaled = true
 
-	return btn
+-- tombol fungsi
+local function createButton(name, pos, callback)
+    local Btn = Instance.new("TextButton", Main)
+    Btn.Size = UDim2.new(0.9,0,0,40)
+    Btn.Position = UDim2.new(0.05,0,pos,0)
+    Btn.BackgroundColor3 = Color3.fromRGB(40,40,60)
+    Btn.Text = name
+    Btn.TextColor3 = Color3.fromRGB(255,255,255)
+    Btn.Font = Enum.Font.GothamBold
+    Btn.TextScaled = true
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0,8)
+    local Stroke = Instance.new("UIStroke", Btn)
+    Stroke.Color = Color3.fromRGB(0,200,255)
+    Stroke.Thickness = 2
+
+    Btn.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(Btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60,60,90)}):Play()
+    end)
+    Btn.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(Btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(40,40,60)}):Play()
+    end)
+
+    Btn.MouseButton1Click:Connect(callback)
+    return Btn
 end
 
--- Input delay
-local DelayBox = Instance.new("TextBox", Main)
-DelayBox.Size = UDim2.new(0,260,0,35)
-DelayBox.Position = UDim2.new(0,20,0,20)
-DelayBox.PlaceholderText = "Loop Delay (detik, 0 = instant)"
-DelayBox.Text = "0"
-DelayBox.BackgroundColor3 = Color3.fromRGB(40,40,60)
-DelayBox.TextColor3 = Color3.fromRGB(220,220,220)
-DelayBox.Font = Enum.Font.Gotham
-DelayBox.TextScaled = true
-Instance.new("UICorner", DelayBox).CornerRadius = UDim.new(0,8)
-
--- Input kode
-local CodeBox = Instance.new("TextBox", Main)
-CodeBox.Size = UDim2.new(0,260,0,35)
-CodeBox.Position = UDim2.new(0,20,0,70)
-CodeBox.PlaceholderText = "Masukkan kode (pisahkan dengan ,)"
-CodeBox.Text = "RELEASE,DROP,UPDATE"
-CodeBox.BackgroundColor3 = Color3.fromRGB(40,40,60)
-CodeBox.TextColor3 = Color3.fromRGB(220,220,220)
-CodeBox.Font = Enum.Font.Gotham
-CodeBox.TextScaled = true
-Instance.new("UICorner", CodeBox).CornerRadius = UDim.new(0,8)
-
--- Tombol
-local StartBtn = makeButton("▶ Start Loop", UDim2.new(0,20,0,120))
-local StopBtn  = makeButton("■ Stop Loop", UDim2.new(0,20,0,170))
-local RedeemBtn= makeButton("💎 Redeem Codes", UDim2.new(0,20,0,220))
-
--- Script fungsi
-local looping = false
-
-StartBtn.MouseButton1Click:Connect(function()
-	if looping then return end
-	looping = true
-	task.spawn(function()
-		while looping do
-			local args = {
-				buffer.fromstring("\128\000\000\000\bA\179\026\002\000\000\000\000\000\000@\245\017\240?")
-			}
-			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Roll"):FireServer(unpack(args))
-			local d = tonumber(DelayBox.Text) or 0
-			task.wait(d)
-		end
-	end)
+-- loop roll
+local running = false
+local loopConnection
+createButton("▶️ Start Loop",0.25,function()
+    if running then return end
+    running = true
+    loopConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        local args = {
+            buffer.fromstring("\128\000\000\000\bA\179\026\002\000\000\000\000\000\000@\245\017\240?")
+        }
+        ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Roll"):FireServer(unpack(args))
+    end)
 end)
 
-StopBtn.MouseButton1Click:Connect(function()
-	looping = false
+createButton("⏹ Stop Loop",0.45,function()
+    running = false
+    if loopConnection then loopConnection:Disconnect() end
 end)
 
-RedeemBtn.MouseButton1Click:Connect(function()
-	local codes = string.split(CodeBox.Text,",")
-	for _,code in ipairs(codes) do
-		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RedeemCode"):FireServer(code)
-		task.wait(0.3)
-	end
+-- daftar kode default
+local codes = {"Release","FreeLuck","FreeGems","Update1"}
+
+-- tombol redeem
+createButton("💎 Redeem Codes",0.65,function()
+    for _,code in ipairs(codes) do
+        ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RedeemCode"):FireServer(code)
+        task.wait(0.3)
+    end
+end)
+
+-- input box untuk edit kode
+local Box = Instance.new("TextBox", Main)
+Box.Size = UDim2.new(0.9,0,0,35)
+Box.Position = UDim2.new(0.05,0,0.85,0)
+Box.PlaceholderText = "Masukkan kode pisahkan dengan koma"
+Box.Text = table.concat(codes,",")
+Box.BackgroundColor3 = Color3.fromRGB(50,50,70)
+Box.TextColor3 = Color3.fromRGB(255,255,255)
+Box.Font = Enum.Font.Gotham
+Box.TextScaled = true
+Instance.new("UICorner", Box).CornerRadius = UDim.new(0,8)
+
+Box.FocusLost:Connect(function()
+    local newCodes = {}
+    for code in string.gmatch(Box.Text,"[^,]+") do
+        table.insert(newCodes,code:gsub("%s",""))
+    end
+    codes = newCodes
 end)
