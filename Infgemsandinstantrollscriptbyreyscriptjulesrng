@@ -1,167 +1,140 @@
--- 🔒 Anti Double Execute System
-if getgenv().ReyScriptExecuted then
-    if not game:GetService("Players").LocalPlayer:FindFirstChild("ReyScriptWarning") then
-        local ScreenGui = Instance.new("ScreenGui")
-        ScreenGui.Name = "ReyScriptWarning"
-        ScreenGui.Parent = game:GetService("CoreGui")
+-- ⚡ GUI Roll + Auto Redeem Kode Jules RNG ⚡
+-- Created by Rey_Script
 
-        local Warning = Instance.new("TextLabel")
-        Warning.Size = UDim2.new(1, 0, 0, 50)
-        Warning.Position = UDim2.new(0, 0, 0, 0)
-        Warning.BackgroundTransparency = 1
-        Warning.Text = "⚠️Don't execute more than 1 because you will get banned from the game⚠️"
-        Warning.TextColor3 = Color3.fromRGB(255, 50, 50)
-        Warning.Font = Enum.Font.SourceSansBold
-        Warning.TextScaled = true
-        Warning.Parent = ScreenGui
-
-        game:GetService("Debris"):AddItem(ScreenGui, 5)
-    end
-    return
+if getgenv().AntiMultiExecute then
+    return game.StarterGui:SetCore("SendNotification", {
+        Title = "⚠️ WARNING ⚠️";
+        Text = "Don't execute more than 1 because you will get banned from the game!";
+        Duration = 6;
+    })
 end
-getgenv().ReyScriptExecuted = true
+getgenv().AntiMultiExecute = true
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
--- 🌌 Splash Screen
-do
-    local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-    local Frame = Instance.new("Frame", ScreenGui)
-    Frame.Size = UDim2.new(1,0,1,0)
-    Frame.BackgroundColor3 = Color3.fromRGB(173, 216, 230)
-    Frame.BackgroundTransparency = 0.2
+-- Remote
+local RollRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Roll")
+local RedeemRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Redeem")
 
-    local Text = Instance.new("TextLabel", Frame)
-    Text.Size = UDim2.new(1,0,0.2,0)
-    Text.Position = UDim2.new(0,0,0.4,0)
-    Text.Text = "✨ Created by Rey_Script ✨"
-    Text.TextColor3 = Color3.fromRGB(255,255,255)
-    Text.Font = Enum.Font.GothamBold
-    Text.TextScaled = true
-    Text.TextStrokeTransparency = 0.5
+-- GUI Buat User
+local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+ScreenGui.Name = "Rey_GUI"
 
-    -- efek bintang random
-    task.spawn(function()
-        for i=1,40 do
-            local star = Instance.new("TextLabel", Frame)
-            star.Text = "✦"
-            star.TextColor3 = Color3.fromRGB(255,255,255)
-            star.Font = Enum.Font.SourceSansBold
-            star.TextSize = math.random(10,20)
-            star.BackgroundTransparency = 1
-            star.Position = UDim2.new(math.random(),0,math.random(),0)
-            task.delay(5,function() star:Destroy() end)
-        end
-    end)
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 300, 0, 220)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -110)
+Frame.BackgroundColor3 = Color3.fromRGB(180, 220, 255)
+Frame.BorderSizePixel = 0
+Frame.BackgroundTransparency = 0.2
+Frame.Active = true
+Frame.Draggable = true
 
-    game:GetService("TweenService"):Create(Frame, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
-    game:GetService("TweenService"):Create(Text, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
-    game:GetService("Debris"):AddItem(ScreenGui,5)
-end
-
--- 🌟 GUI Utama
-local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0, 300, 0, 220)
-Main.Position = UDim2.new(0.35,0,0.3,0)
-Main.BackgroundColor3 = Color3.fromRGB(25,25,35)
-Main.BackgroundTransparency = 0.1
-Main.Active = true
-Main.Draggable = true
-Main.BorderSizePixel = 0
-Main.ClipsDescendants = true
-Main.ZIndex = 5
+-- UI Corner
+local UICorner = Instance.new("UICorner", Frame)
+UICorner.CornerRadius = UDim.new(0, 15)
 
 -- Glow efek
-local UIStroke = Instance.new("UIStroke", Main)
-UIStroke.Color = Color3.fromRGB(0,200,255)
+local UIStroke = Instance.new("UIStroke", Frame)
 UIStroke.Thickness = 2
+UIStroke.Color = Color3.fromRGB(100, 180, 255)
 UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0,12)
-
-local Title = Instance.new("TextLabel", Main)
-Title.Size = UDim2.new(1,0,0,40)
-Title.Text = "🎲 Jules RNG Script"
+-- Judul
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.Text = "⚡ Jules RNG GUI ⚡"
+Title.TextColor3 = Color3.fromRGB(60, 80, 120)
 Title.Font = Enum.Font.GothamBold
-Title.TextScaled = true
+Title.TextSize = 20
 
--- tombol fungsi
-local function createButton(name, pos, callback)
-    local Btn = Instance.new("TextButton", Main)
-    Btn.Size = UDim2.new(0.9,0,0,40)
-    Btn.Position = UDim2.new(0.05,0,pos,0)
-    Btn.BackgroundColor3 = Color3.fromRGB(40,40,60)
-    Btn.Text = name
-    Btn.TextColor3 = Color3.fromRGB(255,255,255)
-    Btn.Font = Enum.Font.GothamBold
-    Btn.TextScaled = true
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0,8)
-    local Stroke = Instance.new("UIStroke", Btn)
-    Stroke.Color = Color3.fromRGB(0,200,255)
-    Stroke.Thickness = 2
+-- Tombol Start Loop
+local StartBtn = Instance.new("TextButton", Frame)
+StartBtn.Size = UDim2.new(0.45, -5, 0, 40)
+StartBtn.Position = UDim2.new(0.05, 0, 0.25, 0)
+StartBtn.BackgroundColor3 = Color3.fromRGB(173, 216, 230)
+StartBtn.Text = "▶ Start Loop"
+StartBtn.TextColor3 = Color3.fromRGB(50, 70, 100)
+StartBtn.Font = Enum.Font.GothamSemibold
+StartBtn.TextSize = 16
+Instance.new("UICorner", StartBtn).CornerRadius = UDim.new(0, 10)
 
-    Btn.MouseEnter:Connect(function()
-        game:GetService("TweenService"):Create(Btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60,60,90)}):Play()
-    end)
-    Btn.MouseLeave:Connect(function()
-        game:GetService("TweenService"):Create(Btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(40,40,60)}):Play()
-    end)
+-- Tombol Stop Loop
+local StopBtn = Instance.new("TextButton", Frame)
+StopBtn.Size = UDim2.new(0.45, -5, 0, 40)
+StopBtn.Position = UDim2.new(0.5, 5, 0.25, 0)
+StopBtn.BackgroundColor3 = Color3.fromRGB(255, 150, 150)
+StopBtn.Text = "⏹ Stop Loop"
+StopBtn.TextColor3 = Color3.fromRGB(60, 0, 0)
+StopBtn.Font = Enum.Font.GothamSemibold
+StopBtn.TextSize = 16
+Instance.new("UICorner", StopBtn).CornerRadius = UDim.new(0, 10)
 
-    Btn.MouseButton1Click:Connect(callback)
-    return Btn
-end
+-- Delay Box
+local DelayBox = Instance.new("TextBox", Frame)
+DelayBox.Size = UDim2.new(0.9, 0, 0, 30)
+DelayBox.Position = UDim2.new(0.05, 0, 0.55, 0)
+DelayBox.BackgroundColor3 = Color3.fromRGB(230, 240, 250)
+DelayBox.Text = "0"
+DelayBox.TextColor3 = Color3.fromRGB(50, 70, 100)
+DelayBox.Font = Enum.Font.Gotham
+DelayBox.TextSize = 14
+Instance.new("UICorner", DelayBox).CornerRadius = UDim.new(0, 8)
 
--- loop roll
+-- Tombol Redeem All Codes
+local RedeemBtn = Instance.new("TextButton", Frame)
+RedeemBtn.Size = UDim2.new(0.9, 0, 0, 35)
+RedeemBtn.Position = UDim2.new(0.05, 0, 0.75, 0)
+RedeemBtn.BackgroundColor3 = Color3.fromRGB(150, 200, 255)
+RedeemBtn.Text = "🎁 Redeem All Codes"
+RedeemBtn.TextColor3 = Color3.fromRGB(30, 50, 80)
+RedeemBtn.Font = Enum.Font.GothamSemibold
+RedeemBtn.TextSize = 16
+Instance.new("UICorner", RedeemBtn).CornerRadius = UDim.new(0, 10)
+
+-- Status
+local Status = Instance.new("TextLabel", Frame)
+Status.Size = UDim2.new(1, 0, 0, 25)
+Status.Position = UDim2.new(0, 0, 0.9, 0)
+Status.BackgroundTransparency = 1
+Status.Text = "Status: Idle"
+Status.TextColor3 = Color3.fromRGB(70, 100, 150)
+Status.Font = Enum.Font.Gotham
+Status.TextSize = 14
+
+-- Loop
 local running = false
-local loopConnection
-createButton("▶️ Start Loop",0.25,function()
+StartBtn.MouseButton1Click:Connect(function()
     if running then return end
     running = true
-    loopConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        local args = {
-            buffer.fromstring("\128\000\000\000\bA\179\026\002\000\000\000\000\000\000@\245\017\240?")
-        }
-        ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Roll"):FireServer(unpack(args))
+    Status.Text = "Status: Loop Running..."
+    task.spawn(function()
+        while running do
+            -- pakai args terbaru yang kamu kasih 👇
+            local args = {
+                buffer.fromstring("\128\000\000\000\bA\179\026\002\000\000\000\000\000\000\128\178\001\241?")
+            }
+            RollRemote:FireServer(unpack(args))
+            
+            local delayTime = tonumber(DelayBox.Text) or 0
+            task.wait(math.max(0, delayTime))
+        end
     end)
 end)
 
-createButton("⏹ Stop Loop",0.45,function()
+StopBtn.MouseButton1Click:Connect(function()
     running = false
-    if loopConnection then loopConnection:Disconnect() end
+    Status.Text = "Status: Stopped"
 end)
 
--- daftar kode default
-local codes = {"Release","FreeLuck","FreeGems","Update1"}
-
--- tombol redeem
-createButton("💎 Redeem Codes",0.65,function()
-    for _,code in ipairs(codes) do
-        ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RedeemCode"):FireServer(code)
-        task.wait(0.3)
+-- Redeem Codes
+local codes = {"RELEASE", "GEMS", "UPDATE1", "FREE" }
+RedeemBtn.MouseButton1Click:Connect(function()
+    for _, code in ipairs(codes) do
+        RedeemRemote:FireServer(code)
+        task.wait(0.2)
     end
-end)
-
--- input box untuk edit kode
-local Box = Instance.new("TextBox", Main)
-Box.Size = UDim2.new(0.9,0,0,35)
-Box.Position = UDim2.new(0.05,0,0.85,0)
-Box.PlaceholderText = "Masukkan kode pisahkan dengan koma"
-Box.Text = table.concat(codes,",")
-Box.BackgroundColor3 = Color3.fromRGB(50,50,70)
-Box.TextColor3 = Color3.fromRGB(255,255,255)
-Box.Font = Enum.Font.Gotham
-Box.TextScaled = true
-Instance.new("UICorner", Box).CornerRadius = UDim.new(0,8)
-
-Box.FocusLost:Connect(function()
-    local newCodes = {}
-    for code in string.gmatch(Box.Text,"[^,]+") do
-        table.insert(newCodes,code:gsub("%s",""))
-    end
-    codes = newCodes
+    Status.Text = "Status: Codes Redeemed"
 end)
