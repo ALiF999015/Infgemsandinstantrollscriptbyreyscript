@@ -1,0 +1,132 @@
+-- Splash Screen
+local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local Splash = Instance.new("Frame", ScreenGui)
+Splash.Size = UDim2.new(1,0,1,0)
+Splash.BackgroundColor3 = Color3.fromRGB(173, 216, 230)
+Splash.BackgroundTransparency = 0.2
+
+local Label = Instance.new("TextLabel", Splash)
+Label.Size = UDim2.new(1,0,1,0)
+Label.BackgroundTransparency = 1
+Label.Text = "✨ Created by Rey_Script ✨"
+Label.TextColor3 = Color3.fromRGB(255,255,255)
+Label.Font = Enum.Font.Gotham
+Label.TextScaled = true
+
+-- Efek bintang random
+for i=1,30 do
+	local star = Instance.new("TextLabel", Splash)
+	star.Size = UDim2.new(0,5,0,5)
+	star.Position = UDim2.new(math.random(),0,math.random(),0)
+	star.BackgroundTransparency = 1
+	star.Text = "✦"
+	star.TextColor3 = Color3.fromRGB(255,255,255)
+	star.TextTransparency = 0.3
+end
+
+task.delay(2,function()
+	Splash:Destroy()
+end)
+
+-- GUI utama
+local Gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local Main = Instance.new("Frame", Gui)
+Main.Size = UDim2.new(0,300,0,250)
+Main.Position = UDim2.new(0.35,0,0.3,0)
+Main.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+Main.BackgroundTransparency = 0.2
+Main.Active = true
+Main.Draggable = true
+Main.ClipsDescendants = true
+Main.BorderSizePixel = 0
+Main.Visible = true
+
+-- UI Corner
+local UICorner = Instance.new("UICorner", Main)
+UICorner.CornerRadius = UDim.new(0,12)
+
+-- Glow effect
+local function makeButton(text, pos)
+	local btn = Instance.new("TextButton", Main)
+	btn.Size = UDim2.new(0,260,0,40)
+	btn.Position = pos
+	btn.Text = text
+	btn.BackgroundColor3 = Color3.fromRGB(173, 216, 230)
+	btn.TextColor3 = Color3.fromRGB(240,240,240)
+	btn.Font = Enum.Font.GothamSemibold
+	btn.TextScaled = true
+	btn.AutoButtonColor = true
+	local corner = Instance.new("UICorner", btn)
+	corner.CornerRadius = UDim.new(0,10)
+
+	-- Glow anim
+	task.spawn(function()
+		while task.wait(1) do
+			btn.BackgroundColor3 = Color3.fromRGB(173,216,230)
+			game:GetService("TweenService"):Create(btn, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(200,230,255)}):Play()
+			task.wait(0.6)
+			game:GetService("TweenService"):Create(btn, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(173,216,230)}):Play()
+		end
+	end)
+
+	return btn
+end
+
+-- Input delay
+local DelayBox = Instance.new("TextBox", Main)
+DelayBox.Size = UDim2.new(0,260,0,35)
+DelayBox.Position = UDim2.new(0,20,0,20)
+DelayBox.PlaceholderText = "Loop Delay (detik, 0 = instant)"
+DelayBox.Text = "0"
+DelayBox.BackgroundColor3 = Color3.fromRGB(40,40,60)
+DelayBox.TextColor3 = Color3.fromRGB(220,220,220)
+DelayBox.Font = Enum.Font.Gotham
+DelayBox.TextScaled = true
+Instance.new("UICorner", DelayBox).CornerRadius = UDim.new(0,8)
+
+-- Input kode
+local CodeBox = Instance.new("TextBox", Main)
+CodeBox.Size = UDim2.new(0,260,0,35)
+CodeBox.Position = UDim2.new(0,20,0,70)
+CodeBox.PlaceholderText = "Masukkan kode (pisahkan dengan ,)"
+CodeBox.Text = "RELEASE,DROP,UPDATE"
+CodeBox.BackgroundColor3 = Color3.fromRGB(40,40,60)
+CodeBox.TextColor3 = Color3.fromRGB(220,220,220)
+CodeBox.Font = Enum.Font.Gotham
+CodeBox.TextScaled = true
+Instance.new("UICorner", CodeBox).CornerRadius = UDim.new(0,8)
+
+-- Tombol
+local StartBtn = makeButton("▶ Start Loop", UDim2.new(0,20,0,120))
+local StopBtn  = makeButton("■ Stop Loop", UDim2.new(0,20,0,170))
+local RedeemBtn= makeButton("💎 Redeem Codes", UDim2.new(0,20,0,220))
+
+-- Script fungsi
+local looping = false
+
+StartBtn.MouseButton1Click:Connect(function()
+	if looping then return end
+	looping = true
+	task.spawn(function()
+		while looping do
+			local args = {
+				buffer.fromstring("\128\000\000\000\bA\179\026\002\000\000\000\000\000\000@\245\017\240?")
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Roll"):FireServer(unpack(args))
+			local d = tonumber(DelayBox.Text) or 0
+			task.wait(d)
+		end
+	end)
+end)
+
+StopBtn.MouseButton1Click:Connect(function()
+	looping = false
+end)
+
+RedeemBtn.MouseButton1Click:Connect(function()
+	local codes = string.split(CodeBox.Text,",")
+	for _,code in ipairs(codes) do
+		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RedeemCode"):FireServer(code)
+		task.wait(0.3)
+	end
+end)
